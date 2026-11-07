@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running Root - How to Play</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0f172a;
+      --panel: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22c55e;
+      --border: #374151;
+      --code-bg: #1f2937;
+      --code-text: #d1fae5;
+      --pre-bg: #0b1220;
+    }
+
+    body.light-theme {
+      color-scheme: light;
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+      --code-bg: #e2e8f0;
+      --code-text: #0f172a;
+      --pre-bg: #f1f5f9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    h1, h2 {
+      font-family: "Times New Roman", Times, Georgia, serif;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    #theme-toggle {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .hero {
+      width: 100%;
+      max-width: 760px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: block;
+      margin: 0 auto 20px auto;
+      background: #000;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    ul {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1px 5px;
+      color: var(--code-text);
+    }
+
+    pre {
+      background: var(--pre-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      overflow-x: auto;
+      margin: 8px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #1f2937;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="toolbar">
+      <button id="theme-toggle" type="button">Switch to Light Mode</button>
+    </div>
+    <img class="hero" src="runningroot.png" alt="Running Root game screenshot">
+    <h1>Running Root: How to Play</h1>
+    <p class="muted">This game is served in a web browser and supports both human and AI-agent gameplay.</p>
+
+    <section>
+      <h2>Human Controls</h2>
+      <ul>
+        <li>Use the <strong>keyboard cursor keys</strong> to move the playable avatar.</li>
+        <li>Press <strong>X</strong> to catch the chicken.</li>
+        <li>Press <strong>Z</strong> to slide.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>AI Agent Gameplay</h2>
+      <p>AI agents can also play the game by connecting through browser automation.</p>
+      <ul>
+        <li>The game logs the avatar’s <strong>line of sight</strong> to the browser developer console.</li>
+        <li>All logs are emitted in <strong>JSON format</strong>.</li>
+        <li>AI agents can read this log stream via the <strong>Playwright SDK</strong>.</li>
+        <li>Agents process the line-of-sight JSON stream and send keyboard inputs back to the browser to react in real time.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Log format, properties and values</h2>
+      <p>The console emits two JSON feed types: <strong>Line of Sight</strong> and <strong>Status</strong>.</p>
+
+      <h3>1) Line of Sight feed</h3>
+      <pre><code>{
+  "facing": "up|down|left|right",
+  "line_of_sight": { "x": number, "y": number },
+  "targets": [
+    {
+      "direction": number,
+      "distance": number,
+      "name": string,
+      "type": "chicken|building|..."
+    }
+  ]
+}</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>facing</code></td>
+            <td>string</td>
+            <td>Current avatar facing direction.</td>
+          </tr>
+          <tr>
+            <td><code>line_of_sight.x</code>, <code>line_of_sight.y</code></td>
+            <td>number</td>
+            <td>Direction vector for the avatar vision ray (for example <code>{ "x": 0, "y": 1 }</code> for down).</td>
+          </tr>
+          <tr>
+            <td><code>targets</code></td>
+            <td>array</td>
+            <td>Detected objects in view; empty when nothing is detected.</td>
+          </tr>
+          <tr>
+            <td><code>targets[].direction</code></td>
+            <td>number</td>
+            <td>Relative bearing/angle to the target.</td>
+          </tr>
+          <tr>
+            <td><code>targets[].distance</code></td>
+            <td>number</td>
+            <td>Distance from avatar to target.</td>
+          </tr>
+          <tr>
+            <td><code>targets[].name</code></td>
+            <td>string</td>
+            <td>Target instance name in the scene (for example <code>Chicken</code>, <code>Tower</code>).</td>
+          </tr>
+          <tr>
+            <td><code>targets[].type</code></td>
+            <td>string</td>
+            <td>Target category (seen values include <code>chicken</code> and <code>building</code>).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>2) Status feed</h3>
+      <pre><code>{
+  "level": number,
+  "status": "completed|over|..."
+}</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>level</code></td>
+            <td>number</td>
+            <td>Level index tied to the status event.</td>
+          </tr>
+          <tr>
+            <td><code>status</code></td>
+            <td>string</td>
+            <td>Level state. Known values: <code>completed</code> (win), <code>over</code> (end/fail).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p><strong>AI interpretation:</strong> treat the feed as a stream of event objects. Route objects with <code>line_of_sight</code> to navigation logic, and objects with <code>status</code> to game-state handling. A clear win signal is <code>{ "status": "completed" }</code>.</p>
+
+    </section>
+    <section>
+      <h2>Win Condition Signal</h2>
+      <p>An AI agent knows the level is won when it detects a status log with status <code>"completed"</code>.</p>
+    </section>
+
+  </main>
+  <script>
+    (function () {
+      var toggleButton = document.getElementById("theme-toggle");
+      var storageKey = "running-root-docs-theme";
+      var savedTheme = localStorage.getItem(storageKey);
+      var isLight = savedTheme === "light";
+
+      function applyTheme(lightMode) {
+        document.body.classList.toggle("light-theme", lightMode);
+        toggleButton.textContent = lightMode ? "Switch to Dark Mode" : "Switch to Light Mode";
+        localStorage.setItem(storageKey, lightMode ? "light" : "dark");
+      }
+
+      applyTheme(isLight);
+      toggleButton.addEventListener("click", function () {
+        isLight = !document.body.classList.contains("light-theme");
+        applyTheme(isLight);
+      });
+    }());
+  </script>
+</body>
+</html>
